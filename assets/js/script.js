@@ -157,3 +157,207 @@ for (let i = 0; i < navigationLinks.length; i++) {
 
   });
 }
+
+// Typing Effect
+const typedText = document.getElementById('typed-text');
+const textToType = 'operational data into growth intelligence.';
+let index = 0;
+
+function typeWriter() {
+  if (index < textToType.length) {
+    typedText.textContent += textToType.charAt(index);
+    index++;
+    setTimeout(typeWriter, 50);
+  }
+}
+
+// Start typing after a delay
+setTimeout(typeWriter, 1000);
+
+// Scroll Animations
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.fade-in').forEach(el => {
+  observer.observe(el);
+});
+
+// Particle Background
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function createParticles() {
+  particles = [];
+  const particleCount = Math.floor(window.innerWidth / 10);
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 2 + 1,
+      opacity: Math.random() * 0.5 + 0.1
+    });
+  }
+}
+
+function updateParticles() {
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+  });
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(34, 211, 238, ${p.opacity})`; // Teal color
+    ctx.fill();
+  });
+}
+
+function animateParticles() {
+  updateParticles();
+  drawParticles();
+  requestAnimationFrame(animateParticles);
+}
+
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  createParticles();
+});
+
+resizeCanvas();
+createParticles();
+animateParticles();
+
+// Ripple Effect for Buttons
+document.querySelectorAll('.hero-btn, .more-projects-btn').forEach(btn => {
+  btn.classList.add('ripple');
+  btn.addEventListener('click', function(e) {
+    const ripple = this;
+    ripple.classList.add('active');
+    setTimeout(() => ripple.classList.remove('active'), 600);
+  });
+});
+
+// Page Load Animation
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('loading');
+});
+
+// Mouse Follower
+const mouseFollower = document.querySelector('.mouse-follower');
+let mouseX = 0, mouseY = 0;
+let followerX = 0, followerY = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+function updateMouseFollower() {
+  followerX += (mouseX - followerX) * 0.1;
+  followerY += (mouseY - followerY) * 0.1;
+  mouseFollower.style.transform = `translate(${followerX - 10}px, ${followerY - 10}px)`;
+  requestAnimationFrame(updateMouseFollower);
+}
+
+updateMouseFollower();
+
+// Skills Animation
+const skillsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateSkills();
+      skillsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 }); // Lower threshold to trigger earlier
+
+const resumeSection = document.querySelector('.resume');
+if (resumeSection) {
+  skillsObserver.observe(resumeSection);
+}
+
+function animateSkills() {
+  // Animate progress bars
+  const progressFills = document.querySelectorAll('.skill-progress-fill');
+  progressFills.forEach((fill, index) => {
+    const skillItem = fill.closest('.skills-item');
+    const dataElement = skillItem.querySelector('data');
+    const targetWidth = dataElement.getAttribute('value') + '%';
+    fill.style.width = '0%';
+    setTimeout(() => {
+      fill.style.width = targetWidth;
+    }, index * 100); // Faster stagger
+  });
+
+  // Animate percentage numbers
+  const skillDatas = document.querySelectorAll('.skills-item .title-wrapper data');
+  skillDatas.forEach((data, index) => {
+    const targetValue = parseInt(data.getAttribute('value'));
+    let currentValue = 0;
+    const increment = targetValue / 40; // Faster counting
+    setTimeout(() => {
+      const timer = setInterval(() => {
+        currentValue += increment;
+        if (currentValue >= targetValue) {
+          currentValue = targetValue;
+          clearInterval(timer);
+        }
+        data.textContent = Math.floor(currentValue) + '%';
+      }, 20); // Faster interval
+    }, index * 100); // Match stagger timing
+  });
+}
+
+// Other Skills Animation
+const otherSkillsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateOtherSkills();
+      otherSkillsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const additionalSkills = document.querySelector('.additional-skills');
+if (additionalSkills) {
+  otherSkillsObserver.observe(additionalSkills);
+}
+
+function animateOtherSkills() {
+  const skillTags = document.querySelectorAll('.skill-tag');
+  skillTags.forEach((tag, index) => {
+    setTimeout(() => {
+      tag.style.opacity = '0';
+      tag.style.transform = 'translateY(20px) scale(0.8)';
+      tag.style.transition = 'all 0.6s ease-out';
+      setTimeout(() => {
+        tag.style.opacity = '1';
+        tag.style.transform = 'translateY(0) scale(1)';
+      }, 100);
+    }, index * 100);
+  });
+}
